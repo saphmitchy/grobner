@@ -1,0 +1,1 @@
+g++ -Wall -I . -I /opt/boost/gcc/include -L/opt/boost/gcc/lib $1 -o $1.out && $1.out
