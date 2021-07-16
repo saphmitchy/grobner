@@ -1,3 +1,6 @@
+#ifndef GROBNER_FIELD_RESIDUE_FIELD_HPP
+#define GROBNER_FIELD_RESIDUE_FIELD_HPP 1
+
 #include <cassert>
 #include <iostream>
 #include "field.hpp"
@@ -29,8 +32,9 @@ class Residue_Field : public Field<Residue_Field<P>> {
         assert(_val > 0);
         return Residue_Field(div_list[_val]);
     }
-    Residue_Field operator-() const { return minus_list[_val]; }
-    Residue_Field() { o(); }
+    bool is_zero() const { return _val == 0; }
+    Residue_Field operator-() const { return Residue_Field(minus_list[_val]); }
+    Residue_Field() : Residue_Field(0) {}
     Residue_Field(const int val_) : _val(val_) {
         assert(0 <= _val && _val < P);
     }
@@ -170,3 +174,5 @@ int* Residue_Field<P>::div_list = make_div_list<P>();
 } // namespace field
 
 } // namespace grobner
+
+#endif
