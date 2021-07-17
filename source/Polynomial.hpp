@@ -67,6 +67,8 @@ Term gcd(const Term &x, const Term &y) {
     return ret;
 }
 
+class Polynomial_Base {};
+
 /**
  * @brief class of Multivariate polynomial
  * 
@@ -74,7 +76,7 @@ Term gcd(const Term &x, const Term &y) {
  * @tparam Comp the functoin decide Order. default is Lexicograph
  */
 template<class Field, class Comp = compare::Lexicograph>
-class Polynomial {
+class Polynomial : public Polynomial_Base {
     public:
     using Unary = std::pair<Term, Field>;
     static_assert(std::is_move_assignable<Unary>::value == true, "OK");
@@ -122,12 +124,19 @@ class Polynomial {
     std::pair<Polynomial, Polynomial> division(const Polynomial& rhs) {
         Polynomial lhs(*this);
         Polynomial quotient;
-        while(!lhs.is_zero() && can_div_term(lhs.LM(), rhs.LM())) {
-            Term dm = div_term(lhs.LM(), rhs.LM());
-            Field dc = lhs.LC() / rhs.LC();
-            Polynomial dpoly(std::vector<Unary>({{dm, dc}}));
-            lhs -= rhs * dpoly;
-            quotient += dpoly;
+        while(!lhs.is_zero()) {
+            bool can_div = false;
+            for(auto &tm : lhs.terms) {
+                if(!can_div_term(tm.first, rhs.LM())) continue;
+                Term dm = div_term(tm.first, rhs.LM());
+                Field dc = tm.second / rhs.LC();
+                Polynomial dpoly(std::vector<Unary>({{dm, dc}}));
+                lhs -= rhs * dpoly;
+                quotient += dpoly;
+                can_div = true;
+                break;
+            }
+            if(!can_div) break;
         }
         return {quotient ,lhs};
     }
