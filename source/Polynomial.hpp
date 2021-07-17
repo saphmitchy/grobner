@@ -11,6 +11,7 @@
 #include <utility>
 #include <type_traits>
 #include <source/field.hpp>
+#include <source/real_number.hpp>
 #include <source/term_compare.hpp>
 
 namespace grobner {
@@ -193,6 +194,7 @@ class Polynomial : public Polynomial_Base {
         return *this;
     }
     Polynomial& operator/=(const Field &rhs) {
+        assert(!rhs.is_zero());
         operator*=(rhs.inv());
         return *this;
     }
@@ -245,6 +247,8 @@ class Polynomial : public Polynomial_Base {
     friend bool operator!=(const Polynomial<_T, _Comp> &lhs, const Polynomial<_T, _Comp> &rhs);
     template<class _T, class _Comp>
     friend std::ostream& operator<<(std::ostream &os, const Polynomial<_T, _Comp> &x);
+    template<class _T, class _Comp>
+    friend bool can_div_poly(const Polynomial<_T, _Comp> &lhs, const Polynomial<_T, _Comp> &rhs);
 };
 
 template<class Field, class Comp>
@@ -271,6 +275,13 @@ Polynomial<Field, Comp> S_poly(const Polynomial<Field, Comp> &x, const Polynomia
     Term g = gcd(x.LM(), y.LM());
     return x * Polynomial<Field, Comp>({{div_term(y.LM(), g), y.LC()}})
          - y * Polynomial<Field, Comp>({{div_term(x.LM(), g), x.LC()}});
+}
+
+template<class Field, class Comp>
+bool can_div_poly(const Polynomial<Field, Comp> &x, const Polynomial<Field, Comp> &y) {
+    assert(!y.is_zero());
+    for(auto &t : x.terms) if(can_div_term(t.first, y.LM())) return true;
+    return false;
 }
 
 } // namespace grobner
