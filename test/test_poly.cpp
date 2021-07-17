@@ -390,6 +390,25 @@ BOOST_AUTO_TEST_CASE(test_division3) {
     BOOST_TEST(x%y == Polynomial<F5>());
 }
 
+BOOST_AUTO_TEST_CASE(test_division4) {
+    std::vector<Unary5> xv({{"xxxx", F5(2)},
+                            {"xyyy", F5(2)},
+                            {"yy"  , F5(1)}});
+    std::vector<Unary5> yv({{"yy"  , F5(2)},
+                            {""    , F5(4)}});
+    std::vector<Unary5> zv({{"xy"  , F5(1)},
+                            {""    , F5(3)}});
+    std::vector<Unary5> wv({{"xy"  , F5(1)},
+                            {"xxxx", F5(2)},
+                            {""    , F5(3)}});
+    Polynomial<F5> x(xv), y(yv), z(zv), w(wv);
+    auto tmp = x.division(y);
+    BOOST_TEST(tmp.first == z);
+    BOOST_TEST(tmp.second == w);
+    BOOST_TEST(x/y == z);
+    BOOST_TEST(x%y == w);
+}
+
 BOOST_AUTO_TEST_CASE(test_is_zero) {
     std::vector<Unary5> wv({{"z" , F5(3)},
                             {"" , F5(2)}});
