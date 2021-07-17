@@ -17,6 +17,56 @@ namespace grobner {
 
 using Term = std::string;
 
+static bool can_div_term(const Term &ls, const Term &rs) {
+    auto liter = ls.cbegin(), riter = rs.cbegin();
+    while(liter != ls.cend() && riter != rs.cend()) {
+        if(*liter == *riter) {
+            ++liter;
+            ++riter;
+        } else {
+            ++liter;
+        }
+    }
+    return riter == rs.cend();
+}
+
+static Term div_term (const Term &ls, const Term &rs) {
+    auto liter = ls.cbegin(), riter = rs.cbegin();
+    Term ret;
+    while(liter != ls.cend() && riter != rs.cend()) {
+        if(*liter == *riter) {
+            ++liter;
+            ++riter;
+        } else {
+            ret += *liter;
+            ++liter;
+        }
+    }
+    assert(riter == rs.cend());
+    while(liter != ls.cend()) {
+        ret += *liter;
+        ++liter;
+    }
+    return ret;
+}
+
+Term gcd(const Term &x, const Term &y) {
+    Term ret;
+    auto xitr = x.cbegin(), yitr = y.cbegin();
+    while(xitr != x.cend() && yitr != y.cend()) {
+        if(*xitr == *yitr) {
+            ret += *xitr;
+            ++xitr;
+            ++yitr;
+        } else if(*xitr > *yitr) {
+            ++yitr;
+        } else {
+            ++xitr;
+        }
+    }
+    return ret;
+}
+
 /**
  * @brief class of Multivariate polynomial
  * 
@@ -180,40 +230,6 @@ class Polynomial {
         return ret;
     }
 
-    public:
-    static bool can_div_term(const Term &ls, const Term &rs) {
-        auto liter = ls.cbegin(), riter = rs.cbegin();
-        while(liter != ls.cend() && riter != rs.cend()) {
-            if(*liter == *riter) {
-                ++liter;
-                ++riter;
-            } else {
-                ++liter;
-            }
-        }
-        return riter == rs.cend();
-    }
-
-    static Term div_term (const Term &ls, const Term &rs) {
-        auto liter = ls.cbegin(), riter = rs.cbegin();
-        Term ret;
-        while(liter != ls.cend() && riter != rs.cend()) {
-            if(*liter == *riter) {
-                ++liter;
-                ++riter;
-            } else {
-                ret += *liter;
-                ++liter;
-            }
-        }
-        assert(riter == rs.cend());
-        while(liter != ls.cend()) {
-            ret += *liter;
-            ++liter;
-        }
-        return ret;
-    }
-
     template<class _T, class _Comp>
     friend bool operator==(const Polynomial<_T, _Comp> &lhs, const Polynomial<_T, _Comp> &rhs);
     template<class _T, class _Comp>
@@ -239,6 +255,13 @@ bool operator==(const Polynomial<Field, Comp> &lhs, const Polynomial<Field, Comp
 template<class Field, class Comp>
 bool operator!=(const Polynomial<Field, Comp> &lhs, const Polynomial<Field, Comp> &rhs) {
     return !(lhs == rhs);
+}
+
+template<class Field, class Comp>
+Polynomial<Field, Comp> S_poly(const Polynomial<Field, Comp> &x, const Polynomial<Field, Comp> &y) {
+    Term g = gcd(x.LM(), y.LM());
+    return x * Polynomial<Field, Comp>({{div_term(y.LM(), g), y.LC()}})
+         - y * Polynomial<Field, Comp>({{div_term(x.LM(), g), x.LC()}});
 }
 
 } // namespace grobner

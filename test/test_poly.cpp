@@ -409,22 +409,30 @@ BOOST_AUTO_TEST_CASE(test_is_zero) {
 }
 
 BOOST_AUTO_TEST_CASE(test_can_div_term) {
-    BOOST_TEST(Polynomial<F5>::can_div_term("xy", "y"));
-    BOOST_TEST(Polynomial<F5>::can_div_term("xyz", "xyz"));
-    BOOST_TEST(Polynomial<F5>::can_div_term("xxx", "x"));
-    BOOST_TEST(Polynomial<F5>::can_div_term("xyyz", "z"));
-    BOOST_TEST(!Polynomial<F5>::can_div_term("xyyz", "zz"));
-    BOOST_TEST(!Polynomial<F5>::can_div_term("xyyz", "xyzz"));
-    BOOST_TEST(!Polynomial<F5>::can_div_term("z", "zz"));
-    BOOST_TEST(!Polynomial<F5>::can_div_term("xy", "z"));
+    BOOST_TEST(can_div_term("xy", "y"));
+    BOOST_TEST(can_div_term("xyz", "xyz"));
+    BOOST_TEST(can_div_term("xxx", "x"));
+    BOOST_TEST(can_div_term("xyyz", "z"));
+    BOOST_TEST(!can_div_term("xyyz", "zz"));
+    BOOST_TEST(!can_div_term("xyyz", "xyzz"));
+    BOOST_TEST(!can_div_term("z", "zz"));
+    BOOST_TEST(!can_div_term("xy", "z"));
 }
 
 BOOST_AUTO_TEST_CASE(test_div_term) {
-    BOOST_TEST(Polynomial<F5>::div_term("xy", "y") == "x");
-    BOOST_TEST(Polynomial<F5>::div_term("xyz", "xyz") == "");
-    BOOST_TEST(Polynomial<F5>::div_term("xxx", "x") == "xx");
-    BOOST_TEST(Polynomial<F5>::div_term("xyyz", "z") == "xyy");
-    BOOST_TEST(Polynomial<F5>::div_term("xyyz", "xy") == "yz");
+    BOOST_TEST(div_term("xy", "y") == "x");
+    BOOST_TEST(div_term("xyz", "xyz") == "");
+    BOOST_TEST(div_term("xxx", "x") == "xx");
+    BOOST_TEST(div_term("xyyz", "z") == "xyy");
+    BOOST_TEST(div_term("xyyz", "xy") == "yz");
+}
+
+BOOST_AUTO_TEST_CASE(test_gcd) {
+    BOOST_TEST(gcd("xy", "y") == "y");
+    BOOST_TEST(gcd("xyz", "xyz") == "xyz");
+    BOOST_TEST(gcd("xxx", "xy") == "x");
+    BOOST_TEST(gcd("z", "xyyz") == "z");
+    BOOST_TEST(gcd("xyyz", "xxy") == "xy");
 }
 
 BOOST_AUTO_TEST_CASE(test_div_Field) {
@@ -452,4 +460,31 @@ BOOST_AUTO_TEST_CASE(test_div_Field) {
     BOOST_TEST(x/w == u);
     x /= z;
     BOOST_TEST(x == y);
+}
+
+BOOST_AUTO_TEST_CASE(test_Spoly) {
+    std::vector<Unary5> xv({{"xx", F5(4)},
+                            {"y" , F5(2)},
+                            {"x" , F5(1)}});
+    std::vector<Unary5> yv({{"xy", F5(1)},
+                            {"x" , F5(4)},
+                            {""  , F5(1)}});
+    std::vector<Unary5> zv({{"xx", F5(4)},
+                            {"xy", F5(1)},
+                            {"yy" , F5(2)},
+                            {"x"  , F5(1)}});
+    Polynomial<F5> x(xv), y(yv), z(zv);
+    BOOST_TEST(S_poly(x, y) == z);
+    std::vector<Unary5> av({{"aa", F5(2)},
+                            {"b" , F5(3)},
+                            {"c" , F5(1)}});
+    std::vector<Unary5> bv({{"a" , F5(4)},
+                            {"c" , F5(4)},
+                            {""  , F5(3)}});
+    std::vector<Unary5> cv({{"b" , F5(2)},
+                            {"c" , F5(4)},
+                            {"ac", F5(2)},
+                            {"a" , F5(4)}});
+    Polynomial<F5> a(av), b(bv), c(cv);
+    BOOST_TEST(S_poly(a, b) == c);
 }
