@@ -124,22 +124,21 @@ class Polynomial : public Polynomial_Base {
      */
     std::pair<Polynomial, Polynomial> division(const Polynomial& rhs) {
         Polynomial lhs(*this);
-        Polynomial quotient;
+        Polynomial quotient, remainder;
         while(!lhs.is_zero()) {
-            bool can_div = false;
-            for(auto &tm : lhs.terms) {
-                if(!can_div_term(tm.first, rhs.LM())) continue;
-                Term dm = div_term(tm.first, rhs.LM());
-                Field dc = tm.second / rhs.LC();
-                Polynomial dpoly(std::vector<Unary>({{dm, dc}}));
+            if(can_div_term(lhs.LM(), rhs.LM())) {
+                Term dm = div_term(lhs.LM(), rhs.LM());
+                Field dc = lhs.LC() /  rhs.LC();
+                Polynomial dpoly({{dm, dc}});
                 lhs -= rhs * dpoly;
                 quotient += dpoly;
-                can_div = true;
-                break;
+            } else {
+                Polynomial dpoly = lhs.LT();
+                remainder += dpoly;
+                lhs -= dpoly;
             }
-            if(!can_div) break;
         }
-        return {quotient ,lhs};
+        return {quotient ,remainder};
     }
     Polynomial operator-() const {
         Polynomial ret(*this);
