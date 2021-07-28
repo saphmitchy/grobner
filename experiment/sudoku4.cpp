@@ -56,7 +56,7 @@ int main() {
             for(int k = 0; k < j; k++) {
                 polys.push_back(is_different(to_char(i, j), to_char(i, k)));
                 polys.push_back(is_different(to_char(j, i), to_char(k, i)));
-            }
+            }// 列、行が同じものについて違う値である
         }
     }
     for(int i = 0; i < N/H; i++) {
@@ -71,7 +71,7 @@ int main() {
             for(int ii = 0; ii < N; ii++) {
                 for(int jj = 0; jj < ii; jj++) {
                     polys.push_back(is_different(tmp[ii], tmp[jj]));
-                }
+                }// 同じブロックのもの同士は異なる値
             }
         }
     }
@@ -79,7 +79,7 @@ int main() {
         for(int j = 0; j < N; j++) {
             if(sudoku[i][j] == 0) polys.push_back(is_nonzero(to_char(i, j)));
             else polys.push_back(is_n(to_char(i, j), sudoku[i][j]));
-        }
+        } // それぞれの変数は0でない
     }
     std::cout << polys.size() << std::endl;
     for(auto &p : polys) {

@@ -51,6 +51,7 @@ static Term div_term (const Term &ls, const Term &rs) {
     return ret;
 }
 
+// 単項どうしのgcdを求める
 Term gcd(const Term &x, const Term &y) {
     Term ret;
     auto xitr = x.cbegin(), yitr = y.cbegin();
@@ -72,7 +73,8 @@ class Polynomial_Base {};
 
 /**
  * @brief class of Multivariate polynomial
- * 
+ * 出力時、入力時は単項式部分を文字列で表現する。変数はascii文字の1文字でなければならず2次以上のときは文字を並べて表現する。
+ * 例：("xx" : 2, "xy" : 3, "x" : 1, "" : 4) -> 2x^2 + 3xy + x + 4
  * @tparam Field 
  * @tparam Comp the functoin decide Order. default is Lexicograph
  */
@@ -269,6 +271,7 @@ bool operator!=(const Polynomial<Field, Comp> &lhs, const Polynomial<Field, Comp
     return !(lhs == rhs);
 }
 
+// S多項式求める
 template<class Field, class Comp>
 Polynomial<Field, Comp> S_poly(const Polynomial<Field, Comp> &x, const Polynomial<Field, Comp> &y) {
     Term g = gcd(x.LM(), y.LM());

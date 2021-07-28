@@ -9,6 +9,7 @@
 
 namespace grobner {
 
+// 剰余を求める
 template<class Poly>
 Poly reduction(Poly x, const std::vector<Poly> &base, size_t exclude = -1) {
     static_assert(std::is_base_of<Polynomial_Base, Poly>::value == true, 
@@ -26,6 +27,7 @@ Poly reduction(Poly x, const std::vector<Poly> &base, size_t exclude = -1) {
     return x;
 }
 
+// buchbergerのアルゴリズム
 template<class Poly>
 std::vector<Poly> buchberger_main(const std::vector<Poly> &x) {
     static_assert(std::is_base_of<Polynomial_Base, Poly>::value == true, 
@@ -49,6 +51,7 @@ std::vector<Poly> buchberger_main(const std::vector<Poly> &x) {
     return basis;
 }
 
+// 簡約Gröbner基底をもとめる
 template<class Poly>
 std::vector<Poly> normalize(std::vector<Poly> &x){
     static_assert(std::is_base_of<Polynomial_Base, Poly>::value == true, 
